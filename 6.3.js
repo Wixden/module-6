@@ -26,4 +26,60 @@ db.test.aggregate([
 ]);
 // This will return us with count field, telling use how many document matches the same country
 
+// $push --> $push is a aggregation pipeline operator: $push returns an array of all values that result from applying an expression to documents. "Using the $push it will create a new array and return the value from pipeline aggregation with the specified field"
+
+// $push Examples:
+db.test.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      sameCountryByEmail: { $push: "$email" },
+    },
+  },
+]);
+db.test.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      sameCountryByGender: { $push: "$gender" },
+    },
+  },
+]);
+db.test.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      sameCountryByCompany: { $push: "$company" },
+    },
+  },
+]);
+
+// $$ROOT will give us the all details in the document
+db.test.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      sameCountryByCompany: { $push: "$$ROOT" },
+    },
+  },
+]);
+
+// here we are getting the field from sameCountryByCompany, because we stored all the doc fields in sameCountryByCompany using $push ($$ROOT)
+db.test.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      sameCountryByCompany: { $push: "$$ROOT" },
+    },
+  },
+  {
+    $project: {
+      "sameCountryByCompany.email": 1,
+      "sameCountryByCompany.phone": 1,
+      "sameCountryByCompany.gender": 1,
+      "sameCountryByCompany.age": 1,
+    },
+  },
+]);
+
 // =============================================================

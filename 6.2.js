@@ -28,4 +28,11 @@ db.test.aggregate([
 
 // ** Creates a new collection if the output collection does not already exist.
 
+// $merge Example:
+db.test.aggregate([
+  { $match: { age: { $gte: 18 } } },
+  { $addFields: { isAdult: true } },
+  { $merge: "test" },
+]);
+
 // =============================================================

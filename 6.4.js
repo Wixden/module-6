@@ -50,7 +50,7 @@ db.test.aggregate([
   {
     $group: {
       _id: null,
-      maxSalary: { $min: "$salary" },
+      minSalary: { $min: "$salary" },
     },
   },
 ]);
@@ -67,7 +67,7 @@ db.test.aggregate([
   {
     $group: {
       _id: null,
-      maxSalary: { $avg: "$salary" },
+      avgSalary: { $avg: "$salary" },
     },
   },
 ]);
@@ -103,6 +103,48 @@ db.test.aggregate([
     $group: {
       _id: "$address.country",
       sameCountryByCompany: { $push: "$company" },
+    },
+  },
+]);
+
+// $project:
+db.test.aggregate([
+  // stage - 1: group
+  {
+    $group: {
+      _id: null,
+      totalSalary: { $sum: "$salary" },
+      maxSalary: { $max: "$salary" },
+      minSalary: { $min: "$salary" },
+      avgSalary: { $avg: "$salary" },
+    },
+  },
+  // stage - 2: project
+  {
+    $project: {
+      totalSalary: 1,
+      maxSalary: 1,
+      minSalary: 1,
+      averageSalary: "$avgSalary",
+    },
+  },
+]);
+
+// $subtract: Subtracts two numbers to return the difference, or two dates to return the difference in milliseconds, or a date and a number in milliseconds to return the resulting date.
+
+db.test.aggregate([
+  {
+    $group: {
+      _id: null,
+      maxSalary: { $max: "$salary" },
+      minSalary: { $min: "$salary" },
+    },
+  },
+  {
+    $project: {
+      maxSalary: 1,
+      minSalary: 1,
+      rngSalary: { $subtract: ["$maxSalary", "$minSalary"] },
     },
   },
 ]);
